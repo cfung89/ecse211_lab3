@@ -1,5 +1,4 @@
 #! /bin/python3
-
 import time
 from utils.brick import Motor, TouchSensor
 
@@ -7,8 +6,9 @@ from utils.brick import Motor, TouchSensor
 ANGLE_ABSOLUTE_RESET = 4 # always reset motor to this absolute position
 ANGLE_RELATIVE_NOTE_START = 25 # motor angle at the start of a drum note
 ANGLE_ABSOLUTE_NOTE_END = 11 # at end of a drum note
-DELAY_TRIPLET = 0.10
-DELAY_EIGHTH_NOTE = 3 * DELAY_TRIPLET
+DELAY_QUARTER = 0.10
+DELAY_EIGHTH_NOTE = DELAY_QUARTER / 2
+DELAY_TRIPLET = DELAY_QUARTER / 3
 TIMEOUT_TOUCH_SENSOR = 0.5
 
 def run_drum_subsystem():
@@ -16,8 +16,6 @@ def run_drum_subsystem():
     Run the drum subsystem: playing is toggled by pressing the drum touch sensor.
     """
     # devices
-    global motor
-
     motor = Motor("A") # motor controlling the drum rod
     drum_touch = TouchSensor(3) # touch sensor to start/stop the drum
 
@@ -28,65 +26,65 @@ def run_drum_subsystem():
         if drum_touch.is_pressed():
             is_drum_playing = not is_drum_playing
 
-        if not is_drum_playing:
-            # reset the drum to prepare for the next time it starts playing
-            reset_drum()
+            if not is_drum_playing:
+                # reset the drum to prepare for the next time it starts playing
+                reset_drum(motor)
 
-        # prevent sensor from registering multiple touches if it's being held
-        time.sleep(TIMEOUT_TOUCH_SENSOR)
+            # prevent sensor from registering multiple touches if it's being held
+            time.sleep(TIMEOUT_TOUCH_SENSOR)
 
         if is_drum_playing:
-            play_drum_bolero()
+            play_drum_bolero(motor)
 
-def reset_drum():
+def reset_drum(motor: Motor):
     """
     Resets the drum motor.
     """
     motor.set_position(ANGLE_ABSOLUTE_RESET)
     return
 
-def play_drum_bolero():
+def play_drum_bolero(motor: Motor):
     """
     Plays the Bolero drum rhythm.
     """
     # first bar
-    play_drum_eighth_note(1)
-    play_drum_triplet(1)
-    
-    play_drum_eighth_note(1)
-    play_drum_triplet(1)
-    
-    play_drum_eighth_note(2)
-    
+    play_drum_eighth_note(motor, 1)
+    play_drum_triplet(motor, 1)
+
+    play_drum_eighth_note(motor, 1)
+    play_drum_triplet(motor, 1)
+
+    play_drum_eighth_note(motor, 2)
+
     # second bar
-    play_drum_eighth_note(1)
-    play_drum_triplet(1)
-    
-    play_drum_eighth_note(1)
-    play_drum_triplet(2)
-    
+    play_drum_eighth_note(motor, 1)
+    play_drum_triplet(motor, 1)
+
+    play_drum_eighth_note(motor, 1)
+    play_drum_triplet(motor, 2)
+
     return
 
-def play_drum_triplet(n_times: int):
+def play_drum_triplet(motor: Motor, n_times: int):
     """
     Plays a triplet on the drum `n_times` number of times.
     """
     for _ in range(n_times):
         for _ in range(3):
-            play_drum_note(DELAY_TRIPLET)
+            play_drum_note(motor, DELAY_TRIPLET)
 
     return
 
-def play_drum_eighth_note(n_times: int):
+def play_drum_eighth_note(motor: Motor, n_times: int):
     """
     Plays an eighth note on the drum `n_times` number of times.
     """
     for _ in range(n_times):
-        play_drum_note(DELAY_EIGHTH_NOTE)
+        play_drum_note(motor, DELAY_EIGHTH_NOTE)
 
     return
 
-def play_drum_note(delay: float):
+def play_drum_note(motor: Motor, delay: float):
     """
     Plays a note with the specified delay once.
     """

@@ -4,4 +4,4 @@ def run_flute_subsystem():
     return
 
 if __name__ == "__main__":
-    print("Drum subsystem tests")
+    print("Flute subsystem tests")
