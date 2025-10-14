@@ -7,6 +7,7 @@ ANGLE_RELATIVE_NOTE_START = 25 # motor angle at the start of a drum note
 ANGLE_ABSOLUTE_NOTE_END = 11 # at end of a drum note
 DELAY_TRIPLET = 0.10
 DELAY_EIGHTH_NOTE = 3 * DELAY_TRIPLET
+TIMEOUT_TOUCH_SENSOR = 0.5
 
 """
 Run the drum subsystem: playing is toggled by pressing the drum touch sensor.
@@ -28,6 +29,9 @@ def run_drum_subsystem():
       if not is_drum_playing:
         # reset the drum to prepare for the next time it starts playing
         reset_drum()
+
+      # prevent sensor from registering multiple touches if it's being held
+      time.sleep(TIMEOUT_TOUCH_SENSOR)
     
     if is_drum_playing:
       play_drum_bolero()
