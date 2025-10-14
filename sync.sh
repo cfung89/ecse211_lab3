@@ -5,7 +5,7 @@ set -euo pipefail
 project="ecse211_lab3"
 
 username="pi"
-ip="192.168.50.5"
+remote="192.168.50.5"
 hostname="$HOSTNAME"
 
 validate_hostname() {
@@ -34,7 +34,7 @@ elif [[ "$1" == "--setup" ]]; then
     fi
     ssh-keygen -f "/home/$USER/.ssh/dpm_$hostname" -N ""
     echo ""
-    ssh-copy-id -i "/home/$USER/.ssh/dpm_$hostname.pub" "$username@$ip"
+    ssh-copy-id -i "/home/$USER/.ssh/dpm_$hostname.pub" "$username@$remote"
     echo "SSH key successfully set up."
 
 elif [[ "$1" == "--delete" ]]; then
@@ -50,6 +50,7 @@ else
         ssh-add "/home/$USER/.ssh/dpm_$hostname"
     fi
     for arg; do
-        scp -r $arg "$username@$ip:/home/$username/Documents/teamate/$project/$arg"
+        ssh "$username@$remote" "rm -rf /home/$username/Documents/teamate/$project/$arg"
+        scp -r $arg "$username@$remote:/home/$username/Documents/teamate/$project/$arg"
     done
 fi

@@ -1,10 +1,12 @@
 #! /bin/python3
 
-import threading, signal
+import threading, signal, time
 from utils.brick import Motor, TouchSensor, EV3UltrasonicSensor
 from utils.brick import wait_ready_sensors
-from subsystems.drum import run_drum_subsystem
-from subsystems.flute import run_flute_subsystem
+from drum import run_drum_subsystem
+from flute import run_flute_subsystem
+
+TIMEOUT_TOUCH_SENSOR = 0.5
 
 def main():
     # devices
@@ -25,6 +27,7 @@ def main():
         while True:
             if stop_touch.is_pressed():
                 raise KeyboardInterrupt("Emergency stop activated.")
+            time.sleep(TIMEOUT_TOUCH_SENSOR)
 
     except KeyboardInterrupt as e:
         print(e)
