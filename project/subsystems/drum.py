@@ -11,7 +11,7 @@ DELAY_EIGHTH_NOTE = DELAY_QUARTER / 2
 DELAY_TRIPLET = DELAY_QUARTER / 3
 TIMEOUT_TOUCH_SENSOR = 0.5
 
-def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor):
+def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, constant_rhythm: bool = True):
     """
     Run the drum subsystem: playing is toggled by pressing the drum touch sensor.
     """
@@ -30,7 +30,10 @@ def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor):
             time.sleep(TIMEOUT_TOUCH_SENSOR)
 
         if is_drum_playing:
-            play_drum_bolero(motor)
+            if constant_rhythm:
+                play_drum_eighth_note(motor, 1)
+            else:
+                play_drum_bolero(motor)
 
 def reset_drum(motor: Motor):
     """
@@ -94,3 +97,6 @@ def play_drum_note(motor: Motor, delay: float):
 
 if __name__ == "__main__":
     print("Drum subsystem tests")
+    drum_touch = TouchSensor(3)
+    motor = Motor("A")
+    run_drum_subsystem(motor, drum_touch)

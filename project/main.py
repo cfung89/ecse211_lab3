@@ -8,10 +8,10 @@ from subsystems.flute import run_flute_subsystem
 
 def main():
     # devices
-    motor = Motor("A") # motor controlling the drum rod
-    drum_touch = TouchSensor(3) # touch sensor to start/stop the drum
-    ultra = EV3UltrasonicSensor(2) # ultrasonic sensor for the flute
     stop_touch = TouchSensor(1) # touch sensor for the emergency stop
+    ultra = EV3UltrasonicSensor(2) # ultrasonic sensor for the flute
+    drum_touch = TouchSensor(3) # touch sensor to start/stop the drum
+    motor = Motor("A") # motor controlling the drum rod
 
     wait_ready_sensors()
 
