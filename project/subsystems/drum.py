@@ -6,19 +6,15 @@ from utils.brick import Motor, TouchSensor
 ANGLE_ABSOLUTE_RESET = 4 # always reset motor to this absolute position
 ANGLE_RELATIVE_NOTE_START = 25 # motor angle at the start of a drum note
 ANGLE_ABSOLUTE_NOTE_END = 11 # at end of a drum note
-DELAY_QUARTER = 0.10
+DELAY_QUARTER = 0.30
 DELAY_EIGHTH_NOTE = DELAY_QUARTER / 2
 DELAY_TRIPLET = DELAY_QUARTER / 3
 TIMEOUT_TOUCH_SENSOR = 0.5
 
-def run_drum_subsystem():
+def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor):
     """
     Run the drum subsystem: playing is toggled by pressing the drum touch sensor.
     """
-    # devices
-    motor = Motor("A") # motor controlling the drum rod
-    drum_touch = TouchSensor(3) # touch sensor to start/stop the drum
-
     # use boolean flag to track if drum is playing
     is_drum_playing = False
 

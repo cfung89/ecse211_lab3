@@ -1,12 +1,44 @@
 #! /bin/python3
 
+import threading, signal
+from utils.brick import Motor, TouchSensor, EV3UltrasonicSensor
 from utils.brick import wait_ready_sensors
 from subsystems.drum import run_drum_subsystem
+from subsystems.flute import run_flute_subsystem
 
 def main():
+    # devices
+    motor = Motor("A") # motor controlling the drum rod
+    drum_touch = TouchSensor(3) # touch sensor to start/stop the drum
+    ultra = EV3UltrasonicSensor(2) # ultrasonic sensor for the flute
+    stop_touch = TouchSensor(1) # touch sensor for the emergency stop
+
     wait_ready_sensors()
 
-    run_drum_subsystem()
+    drum_thread = threading.Thread(target=run_drum_subsystem, args=(motor, drum_touch))
+    flute_thread = threading.Thread(target=run_flute_subsystem, args=(ultra,))
+
+    drum_thread.start()
+    flute_thread.start()
+
+    try:
+        while True:
+            if stop_touch.is_pressed():
+                raise KeyboardInterrupt("Emergency stop activated.")
+    except KeyboardInterrupt as e:
+        print(e)
+
+        drum_thread_id = drum_thread.ident
+        flute_thread_id= flute_thread.ident
+
+        if not(drum_thread_id is None):
+            signal.pthread_kill(drum_thread_id, signal.SIGTERM)
+
+        if not(flute_thread_id is None):
+            signal.pthread_kill(flute_thread_id, signal.SIGTERM)
+
+        drum_thread.join()
+        flute_thread.join()
 
 if __name__ == "__main__":
     main()

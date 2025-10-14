@@ -142,7 +142,7 @@ def _gen_wave(duration, volume, pitch, mod_f, mod_k, amp_f, amp_ka, amp_ac, cuto
 
 
 class Sound:
-    def __init__(self, duration=1, volume=40, pitch="A4", mod_f=0, mod_k=0, amp_f=0, amp_ka=0, amp_ac=1, cutoff=0.01, fs=8000):
+    def __init__(self, duration: float=1, volume=40, pitch="A4", mod_f=0, mod_k=0, amp_f=0, amp_ka=0, amp_ac=1, cutoff=0.01, fs=8000):
         self.player = None
         self._fs = fs  # needs a default value
         self.set_volume(volume)
