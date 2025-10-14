@@ -8,7 +8,7 @@ from subsystems.flute import run_flute_subsystem
 
 def main():
     # devices
-    stop_touch = TouchSensor(1) # touch sensor for the emergency stop
+    stop_touch = TouchSensor(4) # touch sensor for the emergency stop
     ultra = EV3UltrasonicSensor(2) # ultrasonic sensor for the flute
     drum_touch = TouchSensor(3) # touch sensor to start/stop the drum
     motor = Motor("A") # motor controlling the drum rod
@@ -25,9 +25,11 @@ def main():
         while True:
             if stop_touch.is_pressed():
                 raise KeyboardInterrupt("Emergency stop activated.")
+
     except KeyboardInterrupt as e:
         print(e)
 
+    finally:
         drum_thread_id = drum_thread.ident
         flute_thread_id= flute_thread.ident
 
@@ -39,6 +41,9 @@ def main():
 
         drum_thread.join()
         flute_thread.join()
+
+    print("Threads stopped and cleaned up.")
+    print("Exiting...")
 
 if __name__ == "__main__":
     main()
