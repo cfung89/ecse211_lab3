@@ -4,26 +4,45 @@ from utils.brick import EV3UltrasonicSensor
 from utils.sound import Sound
 
 # initialize 4 notes we will use
-noteA = Sound(duration=0.3, pitch="A4", volume=100)
-noteB = Sound(duration=0.3, pitch="B4", volume=100)
-noteC = Sound(duration=0.3, pitch="C5", volume=100)
-noteD = Sound(duration=0.3, pitch="D5", volume=100)
+noteA = Sound(duration=100000, pitch="A4", volume=100)
+noteB = Sound(duration=100000, pitch="B4", volume=100)
+noteC = Sound(duration=100000, pitch="C5", volume=100)
+noteD = Sound(duration=100000, pitch="D5", volume=100)
 
 def play_A():
-    noteA.play()
-    noteA.wait_done()
+    """Plays the note A"""
+    noteA.play() # no wait done so will play until gets stopped
+    noteB.stop()
+    noteC.stop()
+    noteD.stop()
 
 def play_B():
-    noteB.play()
-    noteB.wait_done()
+    """Plays the note B"""
+    noteB.play() # no wait done so will play until gets stopped
+    noteA.stop()
+    noteC.stop()
+    noteD.stop()
 
 def play_C():
-    noteC.play()
-    noteC.wait_done()
+    """Plays the note C"""
+    noteC.play() # no wait done so will play until gets stopped
+    noteA.stop()
+    noteB.stop()
+    noteD.stop()
 
 def play_D():
-    noteD.play()
-    noteD.wait_done()
+    """Plays the note D"""
+    noteD.play() # no wait done so will play until gets stopped
+    noteA.stop()
+    noteB.stop()
+    noteC.stop()
+
+def play_none():
+    """Plays no notes"""
+    noteA.stop()
+    noteB.stop()
+    noteC.stop()
+    noteD.stop()
 
 def run_flute_subsystem(ultra: EV3UltrasonicSensor):
     while True:
@@ -43,7 +62,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor):
                 play_D()
             else:
                 # play nothing
-                pass
+                play_none()
 
 if __name__ == "__main__":
     print("Flute subsystem tests")
