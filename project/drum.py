@@ -115,9 +115,12 @@ def reset_position(motor: Motor):
     assert motor.get_position() == 0
 
 if __name__ == "__main__":
+    from utils.brick import wait_ready_sensors
+
     print("Drum subsystem tests")
     drum_touch = TouchSensor(3)
     motor = Motor("A")
+    wait_ready_sensors()
     try:
         run_drum_subsystem(motor, drum_touch)
     except KeyboardInterrupt:
