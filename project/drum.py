@@ -1,5 +1,5 @@
 #! /bin/python3
-import time
+import threading, time
 from utils.brick import Motor, TouchSensor
 
 # constants for motor angles and delays
@@ -16,25 +16,28 @@ def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, constant_rhythm: b
     """
     reset_drum(motor)
 
-    # use boolean flag to track if drum is playing
-    is_drum_playing = False
+    # use Event object to track if drum is playing
+    global stop_event
+    stop_event = threading.Event()
 
+    t = None
     while True:
         if drum_touch.is_pressed():
-            is_drum_playing = not is_drum_playing
-
-            if not is_drum_playing:
+            if stop_event.is_set():
                 # reset the drum to prepare for the next time it starts playing
+                stop_event.clear()
+                t.join()
                 reset_drum(motor)
+            else:
+                if constant_rhythm:
+                    t = threading.Thread(target=play_drum_constant, args=(motor, DELAY_EIGHTH_NOTE))
+                else:
+                    t = threading.Thread(target=play_drum_bolero, args=(motor,))
+                stop_event.set()
+                t.start()
 
             # prevent sensor from registering multiple touches if it's being held
             time.sleep(TIMEOUT_TOUCH_SENSOR)
-
-        if is_drum_playing:
-            if constant_rhythm:
-                play_drum_eighth_note(motor, 1)
-            else:
-                play_drum_bolero(motor)
 
 def reset_drum(motor: Motor):
     """
@@ -95,6 +98,17 @@ def play_drum_note(motor: Motor, delay: float):
     time.sleep(delay)
 
     return
+
+def play_drum_constant(motor: Motor, delay: float):
+    """
+    Plays a note with the specified delay repeatedly.
+    """
+    while stop_event.is_set():
+        motor.set_position_relative(-1 * ANGLE_RELATIVE_NOTE_START)
+        time.sleep(delay)
+
+        motor.set_position_relative(ANGLE_RELATIVE_NOTE_START)
+        time.sleep(delay)
 
 def reset_position(motor: Motor):
     motor.reset_position()
