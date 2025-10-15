@@ -7,35 +7,39 @@ import time
 DELAY_US = 0.01 # delay time between measurements
 
 # initialize 4 notes we will use
-noteA = Sound(duration=100000, pitch="A4", volume=100)
-noteB = Sound(duration=100000, pitch="B4", volume=100)
-noteC = Sound(duration=100000, pitch="C5", volume=100)
-noteD = Sound(duration=100000, pitch="D5", volume=100)
+noteA = Sound(duration=1, pitch="A4", volume=100)
+noteB = Sound(duration=1, pitch="B4", volume=100)
+noteC = Sound(duration=1, pitch="C5", volume=100)
+noteD = Sound(duration=1, pitch="D5", volume=100)
 
 def play_A():
     """Plays the note A"""
-    noteA.play() # no wait done so will play until gets stopped
+    if not noteA.is_playing():
+        noteA.play() # no wait done so will play until gets stopped
     noteB.stop()
     noteC.stop()
     noteD.stop()
 
 def play_B():
     """Plays the note B"""
-    noteB.play() # no wait done so will play until gets stopped
+    if not noteB.is_playing():
+        noteB.play() # no wait done so will play until gets stopped
     noteA.stop()
     noteC.stop()
     noteD.stop()
 
 def play_C():
     """Plays the note C"""
-    noteC.play() # no wait done so will play until gets stopped
+    if not noteC.is_playing():
+        noteC.play() # no wait done so will play until gets stopped
     noteA.stop()
     noteB.stop()
     noteD.stop()
 
 def play_D():
     """Plays the note D"""
-    noteD.play() # no wait done so will play until gets stopped
+    if not noteD.is_playing():
+        noteD.play() # no wait done so will play until gets stopped
     noteA.stop()
     noteB.stop()
     noteC.stop()
