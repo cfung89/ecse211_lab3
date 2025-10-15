@@ -3,7 +3,7 @@ import time
 from utils.brick import Motor, TouchSensor
 
 # constants for motor angles and delays
-ANGLE_ABSOLUTE_RESET = 69 # always reset motor to this absolute position
+ANGLE_ABSOLUTE_RESET = 0 # always reset motor to this absolute position
 ANGLE_RELATIVE_NOTE_START = 15 # motor angle at the start of a drum note
 DELAY_QUARTER = 0.30
 DELAY_EIGHTH_NOTE = DELAY_QUARTER / 2
@@ -96,14 +96,14 @@ def play_drum_note(motor: Motor, delay: float):
 
     return
 
-def get_position(motor: Motor) -> int:
-    return motor.get_position()
+def reset_position(motor: Motor):
+    motor.reset_position()
+    assert motor.get_position() == 0
 
 if __name__ == "__main__":
     print("Drum subsystem tests")
     drum_touch = TouchSensor(3)
     motor = Motor("A")
-    # motor.reset_position()
     try:
         run_drum_subsystem(motor, drum_touch)
     except KeyboardInterrupt:
