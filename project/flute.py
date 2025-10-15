@@ -2,6 +2,9 @@
 
 from utils.brick import EV3UltrasonicSensor
 from utils.sound import Sound
+import time
+
+DELAY_US = 0.01 # delay time between measurements
 
 # initialize 4 notes we will use
 noteA = Sound(duration=100000, pitch="A4", volume=100)
@@ -63,6 +66,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor):
             else:
                 # play nothing
                 play_none()
+        time.sleep(DELAY_US)
 
 if __name__ == "__main__":
     print("Flute subsystem tests")
