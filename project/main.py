@@ -1,6 +1,6 @@
 #! /bin/python3
 
-import threading, signal, time
+import threading, time
 from utils.brick import Motor, TouchSensor, EV3UltrasonicSensor
 from utils.brick import wait_ready_sensors
 from drum import run_drum_subsystem
@@ -16,32 +16,34 @@ def main():
     motor = Motor("A") # motor controlling the drum rod
 
     wait_ready_sensors()
+    print("Sensors ready.")
 
-    drum_thread = threading.Thread(target=run_drum_subsystem, args=(motor, drum_touch))
-    flute_thread = threading.Thread(target=run_flute_subsystem, args=(ultra,))
+    main_stop_event = threading.Event()
+    main_stop_event.set()
+
+    drum_thread = threading.Thread(target=run_drum_subsystem, args=(motor, drum_touch, main_stop_event))
+    flute_thread = threading.Thread(target=run_flute_subsystem, args=(ultra, main_stop_event))
 
     drum_thread.start()
     flute_thread.start()
+    print("Threads started.")
 
     try:
         while True:
             if stop_touch.is_pressed():
+                if not (main_stop_event is None):
+                    main_stop_event.clear()
                 raise KeyboardInterrupt("Emergency stop activated.")
             time.sleep(TIMEOUT_TOUCH_SENSOR)
+            if not flute_thread.is_alive():
+                print("Restarting flute thread.")
+                flute_thread = threading.Thread(target=run_flute_subsystem, args=(ultra, main_stop_event))
+                flute_thread.start()
 
     except KeyboardInterrupt as e:
         print(e)
 
     finally:
-        drum_thread_id = drum_thread.ident
-        flute_thread_id= flute_thread.ident
-
-        if not(drum_thread_id is None):
-            signal.pthread_kill(drum_thread_id, signal.SIGTERM)
-
-        if not(flute_thread_id is None):
-            signal.pthread_kill(flute_thread_id, signal.SIGTERM)
-
         drum_thread.join()
         flute_thread.join()
 

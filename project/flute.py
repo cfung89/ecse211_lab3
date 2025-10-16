@@ -1,8 +1,9 @@
 #! /bin/python3
 
+import threading, time
+import simpleaudio as sa
 from utils.brick import EV3UltrasonicSensor
 from utils.sound import Sound
-import time
 
 DELAY_US = 0.01 # delay time between measurements
 THETA = 1 # threshold in cm for transitions between notes
@@ -76,45 +77,48 @@ NOTES = {
     "X": play_none
 }
 
-def run_flute_subsystem(ultra: EV3UltrasonicSensor):
+def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.Event):
     # to smooth out transitions, need to read 5 readings in a row in that category
-    prev = "X" 
+    prev = "X"
 
-    while True:
+    while main_stop_event.is_set():
         distance = ultra.get_cm()
         if distance is not None:
-            if 5 <= distance < 15:
-                current = "A"
-                if (abs(distance-5) < THETA and prev == "X") or (abs(distance-15) < THETA and prev == "B"):
-                    # play previous note while waiting to stabilize in between transitions
-                    NOTES[prev]()
+            try:
+                if 5 <= distance < 15:
+                    current = "A"
+                    if (abs(distance-5) < THETA and prev == "X") or (abs(distance-15) < THETA and prev == "B"):
+                        # play previous note while waiting to stabilize in between transitions
+                        NOTES[prev]()
+                    else:
+                        NOTES[current]()
+                elif 15 <= distance < 25:
+                    current = "B"
+                    if (abs(distance-15) < THETA and prev == "A") or (abs(distance-25) < THETA and prev == "C"):
+                        # play previous note while waiting to stabilize in between transitions
+                        NOTES[prev]()
+                    else:
+                        NOTES[current]()
+                elif 25 <= distance < 35: 
+                    current = "C"
+                    if (abs(distance-25) < THETA and prev == "B") or (abs(distance-35) < THETA and prev == "D"):
+                        # play previous note while waiting to stabilize in between transitions
+                        NOTES[prev]()
+                    else:
+                        NOTES[current]()
+                elif 35 <= distance < 45:
+                    current = "D"
+                    if (abs(distance-35) < THETA and prev == "C") or (abs(distance-45) < THETA and prev == "X"):
+                        # play previous note while waiting to stabilize in between transitions
+                        NOTES[prev]()
+                    else:
+                        NOTES[current]()
                 else:
+                    current = "X"
                     NOTES[current]()
-            elif 15 <= distance < 25:
-                current = "B"
-                if (abs(distance-15) < THETA and prev == "A") or (abs(distance-25) < THETA and prev == "C"):
-                    # play previous note while waiting to stabilize in between transitions
-                    NOTES[prev]()
-                else:
-                    NOTES[current]()
-            elif 25 <= distance < 35: 
-                current = "C"
-                if (abs(distance-25) < THETA and prev == "B") or (abs(distance-35) < THETA and prev == "D"):
-                    # play previous note while waiting to stabilize in between transitions
-                    NOTES[prev]()
-                else:
-                    NOTES[current]()
-            elif 35 <= distance < 45:
-                current = "D"
-                if (abs(distance-35) < THETA and prev == "C") or (abs(distance-45) < THETA and prev == "X"):
-                    # play previous note while waiting to stabilize in between transitions
-                    NOTES[prev]()
-                else:
-                    NOTES[current]()
-            else:
-                current = "X"
-                NOTES[current]()
-            prev = current
+                prev = current
+            except sa.SimpleaudioError:
+                return
         time.sleep(DELAY_US)
 
 if __name__ == "__main__":
@@ -123,7 +127,9 @@ if __name__ == "__main__":
     print("Flute subsystem tests")
     ultra = EV3UltrasonicSensor(2)
     wait_ready_sensors()
+    main_stop_event = threading.Event()
+    main_stop_event.set()
     try:
-        run_flute_subsystem(ultra)
+        run_flute_subsystem(ultra, main_stop_event)
     except KeyboardInterrupt:
         pass

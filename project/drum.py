@@ -10,34 +10,39 @@ DELAY_EIGHTH_NOTE = DELAY_QUARTER / 2
 DELAY_TRIPLET = DELAY_QUARTER / 3
 TIMEOUT_TOUCH_SENSOR = 0.5
 
-def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, constant_rhythm: bool = True):
+def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, main_stop_event: threading.Event, constant_rhythm: bool = True):
     """
     Run the drum subsystem: playing is toggled by pressing the drum touch sensor.
     """
     reset_drum(motor)
 
     # use Event object to track if drum is playing
-    global stop_event
-    stop_event = threading.Event()
+    global drum_stop_event
+    drum_stop_event = threading.Event()
 
     t = None
-    while True:
+    while main_stop_event.is_set():
         if drum_touch.is_pressed():
-            if stop_event.is_set():
+            if drum_stop_event.is_set():
                 # reset the drum to prepare for the next time it starts playing
-                stop_event.clear()
-                t.join()
+                drum_stop_event.clear()
+                if not (t is None):
+                    t.join()
                 reset_drum(motor)
             else:
                 if constant_rhythm:
                     t = threading.Thread(target=play_drum_constant, args=(motor, DELAY_EIGHTH_NOTE))
                 else:
                     t = threading.Thread(target=play_drum_bolero, args=(motor,))
-                stop_event.set()
+                drum_stop_event.set()
                 t.start()
 
             # prevent sensor from registering multiple touches if it's being held
             time.sleep(TIMEOUT_TOUCH_SENSOR)
+    drum_stop_event.clear()
+    if not (t is None) and t.is_alive():
+        t.join()
+    reset_drum(motor)
 
 def reset_drum(motor: Motor):
     """
@@ -103,7 +108,7 @@ def play_drum_constant(motor: Motor, delay: float):
     """
     Plays a note with the specified delay repeatedly.
     """
-    while stop_event.is_set():
+    while not (drum_stop_event is None) and drum_stop_event.is_set():
         motor.set_position_relative(-1 * ANGLE_RELATIVE_NOTE_START)
         time.sleep(delay)
 
@@ -121,7 +126,9 @@ if __name__ == "__main__":
     drum_touch = TouchSensor(3)
     motor = Motor("A")
     wait_ready_sensors()
+    main_stop_event = threading.Event()
+    main_stop_event.set()
     try:
-        run_drum_subsystem(motor, drum_touch)
+        run_drum_subsystem(motor, drum_touch, main_stop_event)
     except KeyboardInterrupt:
         pass
