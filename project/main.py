@@ -45,8 +45,8 @@ def main():
         drum_thread.join()
         flute_thread.join()
 
-    print("Threads stopped and cleaned up.")
-    print("Exiting...")
+        print("Threads stopped and cleaned up.")
+        print("Exiting...")
 
 if __name__ == "__main__":
     main()
