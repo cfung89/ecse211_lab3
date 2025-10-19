@@ -107,7 +107,6 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                             # play median while waiting to stabilize in between transitions
                             NOTES[median_high(window)]()
                         else:
-                            current = "X"
                             NOTES[current]()
                     elif 15 <= distance < 25:
                         current = 2
@@ -143,8 +142,8 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                             NOTES[current]()
                         prev = current
 
-                        # write to csv file
-                        output_file.write(f"{distance},{current}\n")
+                    # write to csv file
+                    output_file.write(f"{distance},{current}\n")
                 
                 except sa.SimpleaudioError:
                     return

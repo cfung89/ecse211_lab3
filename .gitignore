@@ -5,4 +5,4 @@ __pycache__/
 .venv/
 
 data_analysis/color_sensor.csv
-data_analysis/us_sensor.csv
+# data_analysis/us_sensor.csv
