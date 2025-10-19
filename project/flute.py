@@ -1,7 +1,6 @@
 #! /bin/python3
 
 import threading, time
-import simpleaudio as sa
 from utils.brick import EV3UltrasonicSensor
 from utils.sound import Sound
 import time
@@ -138,7 +137,8 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         NOTES[current]()
                 prev = current
             
-            except sa.SimpleaudioError:
+            except Exception as e:
+                print(f"{e}\n")
                 return
             
             prev = current
