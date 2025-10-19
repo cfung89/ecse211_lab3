@@ -141,7 +141,6 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                             NOTES[mode(window)]()
                         else:
                             NOTES[current]()
-                    prev = current
 
                     # write to csv file
                     output_file.write(f"{distance},{current}\n")

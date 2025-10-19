@@ -136,7 +136,6 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         NOTES[mode(window)]()
                     else:
                         NOTES[current]()
-                prev = current
             
             except sa.SimpleaudioError:
                 return
