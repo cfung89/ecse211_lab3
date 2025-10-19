@@ -2,7 +2,7 @@
 
 import threading, time
 from utils.brick import Motor, TouchSensor, EV3UltrasonicSensor
-from utils.brick import wait_ready_sensors
+from utils.brick import wait_ready_sensors, reset_brick
 from drum import run_drum_subsystem
 from flute import run_flute_subsystem
 
@@ -46,6 +46,7 @@ def main():
     finally:
         drum_thread.join()
         flute_thread.join()
+        reset_brick()
 
         print("Threads stopped and cleaned up.")
         print("Exiting...")

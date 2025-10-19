@@ -10,6 +10,7 @@ from statistics import median_high
 DELAY_US = 0.01 # delay time between measurements
 THETA = 1 # threshold in cm for transitions between notes
 WINDOW_SIZE = 4 # size of sliding window for moving median
+FILE = "../data_analysis/us_sensor.csv"
 
 # initialize 4 notes we will use
 noteA = Sound(duration=0.5, pitch="A4", volume=100)
@@ -92,58 +93,68 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
     current = 0
     window = [0 for _ in range(WINDOW_SIZE)] # sliding window for computing median
 
-    while main_stop_event.is_set():
-        distance = ultra.get_cm()
-        if distance is not None:
-            try:
-                if 5 <= distance < 15:
-                    current = 1
-                    move_window(current, window)
-                    if (abs(distance-5) < THETA and prev == 0) or (abs(distance-15) < THETA and prev == 2):
-                        # play median while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
+    try:
+        output_file = open(FILE, "w")
+
+        while main_stop_event.is_set():
+            distance = ultra.get_cm()
+            if distance is not None:
+                try:
+                    if 5 <= distance < 15:
+                        current = 1
+                        move_window(current, window)
+                        if (abs(distance-5) < THETA and prev == 0) or (abs(distance-15) < THETA and prev == 2):
+                            # play median while waiting to stabilize in between transitions
+                            NOTES[median_high(window)]()
+                        else:
+                            current = "X"
+                            NOTES[current]()
+                    elif 15 <= distance < 25:
+                        current = 2
+                        move_window(current, window)
+                        if (abs(distance-15) < THETA and prev == 1) or (abs(distance-25) < THETA and prev == 3):
+                            # play previous note while waiting to stabilize in between transitions
+                            NOTES[median_high(window)]()
+                        else:
+                            NOTES[current]()
+                    elif 25 <= distance < 35: 
+                        current = 3
+                        move_window(current, window)
+                        if (abs(distance-25) < THETA and prev == 2) or (abs(distance-35) < THETA and prev == 4):
+                            # play previous note while waiting to stabilize in between transitions
+                            NOTES[median_high(window)]()
+                        else:
+                            NOTES[current]()
+                    elif 35 <= distance < 45:
+                        current = 4
+                        move_window(current, window)
+                        if (abs(distance-35) < THETA and prev == 3) or (abs(distance-45) < THETA and prev == 0):
+                            # play previous note while waiting to stabilize in between transitions
+                            NOTES[median_high(window)]()
+                        else:
+                            NOTES[current]()
                     else:
-                        current = "X"
-                        NOTES[current]()
-                elif 15 <= distance < 25:
-                    current = 2
-                    move_window(current, window)
-                    if (abs(distance-15) < THETA and prev == 1) or (abs(distance-25) < THETA and prev == 3):
-                        # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
-                    else:
-                        NOTES[current]()
-                elif 25 <= distance < 35: 
-                    current = 3
-                    move_window(current, window)
-                    if (abs(distance-25) < THETA and prev == 2) or (abs(distance-35) < THETA and prev == 4):
-                        # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
-                    else:
-                        NOTES[current]()
-                elif 35 <= distance < 45:
-                    current = 4
-                    move_window(current, window)
-                    if (abs(distance-35) < THETA and prev == 3) or (abs(distance-45) < THETA and prev == 0):
-                        # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
-                    else:
-                        NOTES[current]()
-                else:
-                    current = 0
-                    move_window(current, window)
-                    if (abs(distance-5) < THETA and prev == 1) or (abs(distance-45) < THETA and prev == 4):
-                        # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
-                    else:
-                        NOTES[current]()
-                    prev = current
-            
-            except sa.SimpleaudioError:
-                return
-            
-            prev = current
-        time.sleep(DELAY_US)
+                        current = 0
+                        move_window(current, window)
+                        if (abs(distance-5) < THETA and prev == 1) or (abs(distance-45) < THETA and prev == 4):
+                            # play previous note while waiting to stabilize in between transitions
+                            NOTES[median_high(window)]()
+                        else:
+                            NOTES[current]()
+                        prev = current
+
+                        # write to csv file
+                        output_file.write(f"{distance},{current}\n")
+                
+                except sa.SimpleaudioError:
+                    return
+                
+                prev = current
+            time.sleep(DELAY_US)
+    finally:
+        print("Done collecting US distance samples")
+        output_file.close()
+
 
 if __name__ == "__main__":
     from utils.brick import wait_ready_sensors
