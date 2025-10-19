@@ -9,7 +9,7 @@ from statistics import mode
 
 DELAY_US = 0.01 # delay time between measurements
 THETA = 1 # threshold in cm for transitions between notes
-WINDOW_SIZE = 4 # size of sliding window for moving median
+WINDOW_SIZE = 4 # size of sliding window for moving mode
 FILE = "../data_analysis/us_sensor_ordered.csv" # file name for csv for ordered notes test
 # FILE = "../data_analysis/us_sensor_unordered.csv" # file name for csv for unordered notes test
  
@@ -92,7 +92,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
     # to smooth out transitions, need to read 5 readings in a row in that category
     prev = 0
     current = 0
-    window = [0 for _ in range(WINDOW_SIZE)] # sliding window for computing median
+    window = [0 for _ in range(WINDOW_SIZE)] # sliding window for computing mode
 
     try:
         output_file = open(FILE, "w")
@@ -105,7 +105,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         current = 1
                         move_window(current, window)
                         if (abs(distance-5) < THETA and prev == 0) or (abs(distance-15) < THETA and prev == 2):
-                            # play median while waiting to stabilize in between transitions
+                            # play majority note while waiting to stabilize in between transitions
                             NOTES[mode(window)]()
                         else:
                             NOTES[current]()
@@ -113,7 +113,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         current = 2
                         move_window(current, window)
                         if (abs(distance-15) < THETA and prev == 1) or (abs(distance-25) < THETA and prev == 3):
-                            # play previous note while waiting to stabilize in between transitions
+                            # play majority note while waiting to stabilize in between transitions
                             NOTES[mode(window)]()
                         else:
                             NOTES[current]()
@@ -121,7 +121,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         current = 3
                         move_window(current, window)
                         if (abs(distance-25) < THETA and prev == 2) or (abs(distance-35) < THETA and prev == 4):
-                            # play previous note while waiting to stabilize in between transitions
+                            # play majority note while waiting to stabilize in between transitions
                             NOTES[mode(window)]()
                         else:
                             NOTES[current]()
@@ -129,7 +129,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         current = 4
                         move_window(current, window)
                         if (abs(distance-35) < THETA and prev == 3) or (abs(distance-45) < THETA and prev == 0):
-                            # play previous note while waiting to stabilize in between transitions
+                            # play majority note while waiting to stabilize in between transitions
                             NOTES[mode(window)]()
                         else:
                             NOTES[current]()
@@ -137,7 +137,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                         current = 0
                         move_window(current, window)
                         if (abs(distance-5) < THETA and prev == 1) or (abs(distance-45) < THETA and prev == 4):
-                            # play previous note while waiting to stabilize in between transitions
+                            # play majority note while waiting to stabilize in between transitions
                             NOTES[mode(window)]()
                         else:
                             NOTES[current]()
