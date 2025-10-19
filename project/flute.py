@@ -5,7 +5,7 @@ import simpleaudio as sa
 from utils.brick import EV3UltrasonicSensor
 from utils.sound import Sound
 import time
-from statistics import median_high
+from statistics import mode
 
 DELAY_US = 0.01 # delay time between measurements
 THETA = 1 # threshold in cm for transitions between notes
@@ -101,7 +101,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                     move_window(current, window)
                     if (abs(distance-5) < THETA and prev == 0) or (abs(distance-15) < THETA and prev == 2):
                         # play median while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
+                        NOTES[mode(window)]()
                     else:
                         NOTES[current]()
                 elif 15 <= distance < 25:
@@ -109,7 +109,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                     move_window(current, window)
                     if (abs(distance-15) < THETA and prev == 1) or (abs(distance-25) < THETA and prev == 3):
                         # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
+                        NOTES[mode(window)]()
                     else:
                         NOTES[current]()
                 elif 25 <= distance < 35: 
@@ -117,7 +117,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                     move_window(current, window)
                     if (abs(distance-25) < THETA and prev == 2) or (abs(distance-35) < THETA and prev == 4):
                         # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
+                        NOTES[mode(window)]()
                     else:
                         NOTES[current]()
                 elif 35 <= distance < 45:
@@ -125,7 +125,7 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                     move_window(current, window)
                     if (abs(distance-35) < THETA and prev == 3) or (abs(distance-45) < THETA and prev == 0):
                         # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
+                        NOTES[mode(window)]()
                     else:
                         NOTES[current]()
                 else:
@@ -133,10 +133,10 @@ def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.E
                     move_window(current, window)
                     if (abs(distance-5) < THETA and prev == 1) or (abs(distance-45) < THETA and prev == 4):
                         # play previous note while waiting to stabilize in between transitions
-                        NOTES[median_high(window)]()
+                        NOTES[mode(window)]()
                     else:
                         NOTES[current]()
-                    prev = current
+                prev = current
             
             except sa.SimpleaudioError:
                 return
