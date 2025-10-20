@@ -11,10 +11,10 @@ THETA = 1 # threshold in cm for transitions between notes
 WINDOW_SIZE = 4 # size of sliding window for moving mode
 
 # initialize 4 notes we will use
-noteA = Sound(duration=0.5, pitch="A4", volume=90)
-noteB = Sound(duration=0.5, pitch="B4", volume=90)
-noteC = Sound(duration=0.5, pitch="C5", volume=90)
-noteD = Sound(duration=0.5, pitch="D5", volume=90)
+noteA = Sound(duration=0.5, pitch="A4", volume=80)
+noteB = Sound(duration=0.5, pitch="B4", volume=80)
+noteC = Sound(duration=0.5, pitch="C5", volume=80)
+noteD = Sound(duration=0.5, pitch="D5", volume=80)
 
 def play_A():
     """Plays the note A"""
