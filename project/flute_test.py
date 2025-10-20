@@ -14,10 +14,10 @@ FILE = "../data_analysis/us_sensor_ordered.csv" # file name for csv for ordered 
 # FILE = "../data_analysis/us_sensor_unordered.csv" # file name for csv for unordered notes test
  
 # initialize 4 notes we will use
-noteA = Sound(duration=0.5, pitch="A4", volume=100)
-noteB = Sound(duration=0.5, pitch="B4", volume=100)
-noteC = Sound(duration=0.5, pitch="C5", volume=100)
-noteD = Sound(duration=0.5, pitch="D5", volume=100)
+noteA = Sound(duration=0.5, pitch="A4", volume=90)
+noteB = Sound(duration=0.5, pitch="B4", volume=90)
+noteC = Sound(duration=0.5, pitch="C5", volume=90)
+noteD = Sound(duration=0.5, pitch="D5", volume=90)
 
 def play_A():
     """Plays the note A"""
