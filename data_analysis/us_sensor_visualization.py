@@ -10,8 +10,8 @@ as explained in the README.md file.
 
 from matplotlib import pyplot as plt
 
-US_SENSOR_DATA_FILE = "us_sensor.csv"
-DELAY_SEC = 0.01
+US_SENSOR_DATA_FILE = "old_us_sensor_unordered.csv"
+DELAY_SEC = 0.05
 
 with open(US_SENSOR_DATA_FILE, "r") as f:
     data = [d.strip("\n").split(",") for d in f.readlines()]
