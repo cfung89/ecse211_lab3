@@ -1,4 +1,5 @@
 #! /bin/python3
+
 import threading, time
 from utils.brick import Motor, TouchSensor
 
@@ -10,7 +11,7 @@ DELAY_EIGHTH_NOTE = DELAY_QUARTER / 2
 DELAY_TRIPLET = DELAY_QUARTER / 3
 TIMEOUT_TOUCH_SENSOR = 0.5
 
-def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, main_stop_event: threading.Event, constant_rhythm: bool = True):
+def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, main_stop_event: threading.Event):
     """
     Run the drum subsystem: playing is toggled by pressing the drum touch sensor.
     """
@@ -30,10 +31,8 @@ def run_drum_subsystem(motor: Motor, drum_touch: TouchSensor, main_stop_event: t
                     t.join()
                 reset_drum(motor)
             else:
-                if constant_rhythm:
-                    t = threading.Thread(target=play_drum_constant, args=(motor, DELAY_EIGHTH_NOTE))
-                else:
-                    t = threading.Thread(target=play_drum_bolero, args=(motor,))
+                # create and start drum thread
+                t = threading.Thread(target=play_drum_constant, args=(motor, DELAY_EIGHTH_NOTE))
                 drum_stop_event.set()
                 t.start()
 
@@ -49,28 +48,6 @@ def reset_drum(motor: Motor):
     Resets the drum motor.
     """
     motor.set_position(ANGLE_ABSOLUTE_RESET)
-    return
-
-def play_drum_bolero(motor: Motor):
-    """
-    Plays the Bolero drum rhythm.
-    """
-    # first bar
-    play_drum_eighth_note(motor, 1)
-    play_drum_triplet(motor, 1)
-
-    play_drum_eighth_note(motor, 1)
-    play_drum_triplet(motor, 1)
-
-    play_drum_eighth_note(motor, 2)
-
-    # second bar
-    play_drum_eighth_note(motor, 1)
-    play_drum_triplet(motor, 1)
-
-    play_drum_eighth_note(motor, 1)
-    play_drum_triplet(motor, 2)
-
     return
 
 def play_drum_triplet(motor: Motor, n_times: int):

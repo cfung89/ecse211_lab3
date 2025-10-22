@@ -1,3 +1,10 @@
+#! /bin/python3
+
+"""
+Initial test file to understand the methods related to the motor.
+This was not used to test any design or own implementation.
+"""
+
 from utils.brick import Motor
 import time
 

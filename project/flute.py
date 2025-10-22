@@ -6,9 +6,9 @@ from utils.sound import Sound
 import time
 from statistics import mode
 
-DELAY_US = 0.01 # delay time between measurements
-THETA = 1 # threshold in cm for transitions between notes
-WINDOW_SIZE = 4 # size of sliding window for moving mode
+DELAY_US = 0.01                         # delay time between measurements
+THETA = 1                               # threshold in cm for transitions between notes
+WINDOW_SIZE = 4                         # size of sliding window for moving mode
 
 # initialize 4 notes we will use
 noteA = Sound(duration=0.5, pitch="A4", volume=80)
@@ -85,7 +85,10 @@ NOTES = {
 }
 
 def run_flute_subsystem(ultra: EV3UltrasonicSensor, main_stop_event: threading.Event):
-    """Runs flute subsystem and note playing algorithm. Writes to a CSV file the distance and note pairs if write is True (default False)."""
+    """
+    Runs flute subsystem and note playing algorithm.
+    Writes to a CSV file the distance and note pairs if write is True (default False).
+    """
     # to smooth out transitions, need to read 5 readings in a row in that category
     prev = 0
     current = 0
