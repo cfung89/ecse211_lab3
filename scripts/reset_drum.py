@@ -1,5 +1,5 @@
-from drum import *
-from utils.brick import wait_ready_sensors, TouchSensor, Motor
+from project.drum import *
+from project.utils.brick import wait_ready_sensors, TouchSensor, Motor
 
 if __name__ == "__main__":
     print("Drum subsystem tests")
